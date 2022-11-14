@@ -1,12 +1,15 @@
 Autoswitch Python Virtualenv
 ============================
 
-|CircleCI| |Release| |GPLv3|
+|GPLv3|
 
-*zsh-autoswitch-virtualenv* is a simple and quick ZSH plugin that switches python
+This project is a fish port of zsh-autoswitch-virtualenv_ by MichaelAquilina_.
+Credit for the original work goes to him and his contributors.
+
+*fish-autoswitch-virtualenv* is a simple and quick fish plugin that switches python
 virtualenvs automatically as you move between directories.
 
-*zsh-autoswitch-virtualenv* also automatically detects and activates your **Pipenv** and **Poetry** projects
+*fish-autoswitch-virtualenv* also automatically detects and activates your **Pipenv** and **Poetry** projects
 without any setup necessary.
 
 * `How it Works`_
@@ -27,7 +30,7 @@ Simply call the ``mkvenv`` command in the directory you wish to setup a
 virtual environment. A virtual environment specific to that folder will
 now activate every time you enter it.
 
-``zsh-autoswitch-virtualenv`` will detect python projects and remind
+``fish-autoswitch-virtualenv`` will detect python projects and remind
 you to create a virtual environment. This mainly occurs if one of the following
 is found in current the directory:
 
@@ -74,59 +77,24 @@ Installing
 ``autoswitch-virtualenv`` requires `virtualenv <https://pypi.org/project/virtualenv/>`__ to be installed.
 You will also need to make sure that ``python`` (without a suffix; both Python 2 and 3 are supported) is available in your ``$PATH``.
 
-Once ``virtualenv`` is installed, add one of the following lines to your ``.zshrc`` file depending on the
-package manager you are using:
+Once ``virtualenv`` is installed, do one of the following to install this plugin:
 
-ZPlug_
-
-::
-
-    zplug "MichaelAquilina/zsh-autoswitch-virtualenv"
-
-Antigen_
+fisher_
 
 ::
 
-    antigen bundle "MichaelAquilina/zsh-autoswitch-virtualenv"
-
-Zgen_
-
-::
-
-    zgen load "MichaelAquilina/zsh-autoswitch-virtualenv"
-
-Fig_
-
-Install ``zsh-autoswitch-virtualenv`` with Fig in just one click.
-
-.. image:: https://fig.io/badges/install-with-fig.svg
-  :target: https://fig.io/plugins/other/zsh-autoswitch-virtualenv_MichaelAquilina
-  :alt: Install with Fig
-
-oh-my-zsh_
-
-Copy this repository to ``$ZSH_CUSTOM/plugins``, where ``$ZSH_CUSTOM``
-is the directory with custom plugins of oh-my-zsh `(read more) <https://github.com/robbyrussell/oh-my-zsh/wiki/Customization/>`_:
-
-::
-
-    git clone "https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv.git" "$ZSH_CUSTOM/plugins/autoswitch_virtualenv"
-
-Then add this line to your ``.zshrc``. Make sure it is **before** the line ``source $ZSH/oh-my-zsh.sh``.
-
-::
-
-    plugins=(autoswitch_virtualenv $plugins)
+    fisher install "hbiel/fish-autoswitch-virtualenv"
 
 Manual Installation
 '''''''''''''''''''
 
-Source the plugin shell script in your `~/.zshrc` profile. For example
+Copy the contents of conf.d and functions in this repository to the corresponding folder
+in your fish configuration:
 
 ::
 
-   source $HOME/zsh-autoswitch-virtualenv/autoswitch_virtualenv.plugin.zsh
-
+    cp -r conf.d/ ~/.config/fish/
+    cp -r functions/ ~/.config/fish/
 
 Pipenv and Poetry Integration
 -----------------------------
@@ -173,11 +141,11 @@ enter a subdirectory.
 ::
 
     $ cd my-python-project
-    Switching virtualenv: my-python-project  [Python 3.4.3+]
+    Switching virtualenv my-python-project  [Python 3.4.3+]
     $ cd src
     $ # Notice how this has not deactivated the project virtualenv
     $ cd ../..
-    Switching virtualenv: mydefaultenv  [Python 3.4.3+]
+    Switching virtualenv mydefaultenv  [Python 3.4.3+]
     $ # exited the project parent folder, so the virtualenv is now deactivated
 
 rmvenv
@@ -224,7 +192,7 @@ By default, the following message is displayed in bold when an alias is found:
 
 ::
 
-    Switching %venv_type: %venv_name [%py_version]
+    Switching %venv_type %venv_name [%py_version]
 
 Where the following variables represent:
 
@@ -234,24 +202,20 @@ Where the following variables represent:
 
 This default message can be customised by setting the ``AUTOSWITCH_MESSAGE_FORMAT`` environment variable.
 
-If for example, you wish to display your own custom message in red, you can add the
-following to your ``~/.zshrc``:
+If for example, you wish to display your own custom message in red, you can do the following:
 
 ::
 
-    export AUTOSWITCH_MESSAGE_FORMAT="$(tput setaf 1)Switching to %venv_name 🐍 %py_version $(tput sgr0)"
+    set -U AUTOSWITCH_MESSAGE_FORMAT (set_color red)"Switching to %venv_name 🐍 %py_version"(set_color normal)
 
-``$(tput setaf 1)`` generates the escape code terminals use for red foreground text. ``$(tput sgr0)`` sets
+``(set_color red)`` generates the escape code terminals use for red foreground text. ``(set_color normal)`` sets
 the text back to a normal color.
-
-You can read more about how you can use tput and terminal escape codes here:
-http://wiki.bash-hackers.org/scripting/terminalcodes
 
 
 Options
 -------
 
-The following options can be configured by setting the appropriate variables within your ``~/.zshrc`` file.
+The following options can be configured by setting the appropriate variables within your fish config:
 
 **Setting a default virtual environment**
 
@@ -260,7 +224,7 @@ the value of ``AUTOSWITCH_DEFAULTENV`` to the name of a virtualenv. For example:
 
 ::
 
-    export AUTOSWITCH_DEFAULTENV="mydefaultenv"
+    set -x AUTOSWITCH_DEFAULTENV "mydefaultenv"
 
 **Setting a default python binary**
 
@@ -269,7 +233,7 @@ by setting the value of ``AUTOSWITCH_DEFAULT_PYTHON``. For example:
 
 ::
 
-    export AUTOSWITCH_DEFAULT_PYTHON="/usr/bin/python3"
+    set -x AUTOSWITCH_DEFAULT_PYTHON "/usr/bin/python3"
 
 You may still override this default as usual by passing the --python parameter to
 the mkvenv command.
@@ -284,7 +248,7 @@ changed by setting the value of ``AUTOSWITCH_FILE``. For example:
 
 ::
 
-    export AUTOSWITCH_FILE=".autoswitch"
+    set -x AUTOSWITCH_FILE ".autoswitch"
 
 **Default requirements file**
 
@@ -293,7 +257,7 @@ setting the value of ``AUTOSWITCH_DEFAULT_REQUIREMENTS``. For example:
 
 ::
 
-    export AUTOSWITCH_DEFAULT_REQUIREMENTS="$HOME/.requirements.txt"
+    set -x AUTOSWITCH_DEFAULT_REQUIREMENTS "$HOME/.requirements.txt"
 
 If the value is set and the target file exists you will be prompted to install with that file
 each time you create a new virtualenv.
@@ -318,7 +282,7 @@ then you can set the variable to use a relative path. For example:
 
 ::
 
-    export AUTOSWITCH_VIRTUAL_ENV_DIR=".virtualenv"
+    set -x AUTOSWITCH_VIRTUAL_ENV_DIR ".virtualenv"
 
 **Customising pip install invocation**
 
@@ -329,7 +293,7 @@ To change this set ``AUTOSWITCH_PIPINSTALL`` to ``FULL``.
 Security Warnings
 -----------------
 
-zsh-autoswitch-virtualenv will warn you and refuse to activate a virtual
+fish-autoswitch-virtualenv will warn you and refuse to activate a virtual
 environment automatically in the following situations:
 
 -  You are not the owner of the ``.venv`` file found in a directory.
@@ -344,42 +308,25 @@ switch to.
 Running Tests
 -------------
 
-Install `zunit <https://zunit.xyz/>`__. Run ``zunit`` in the root
+Install fishtape_ and clownfish_. Run ``fishtape tests/*.fish`` in the root
 directory of the repo.
 
 ::
 
-    $ zunit
-    Launching ZUnit
-    ZUnit: 0.8.2
-    ZSH:   zsh 5.3.1 (x86_64-suse-linux-gnu)
+    ❯ fishtape tests/*.fish
+    TAP version 13
+    ok 1 _autovenv_activate_default_venv: activate default env
+    ok 2 _autovenv_activate_default_venv: deactivate current env
 
-    ✔ _check_venv_path - returns nothing if not found
-    ✔ _check_venv_path - finds .venv in parent directories
-    ✔ _check_venv_path - returns nothing with root path
-    ✔ check_venv - Security warning for weak permissions
+.. _zsh-autoswitch-virtualenv: https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv
 
-NOTE: It is required that you use a minimum zunit version of 0.8.2
+.. _MichaelAquilina: https://github.com/MichaelAquilina
 
+.. _fisher: https://github.com/jorgebucaran/fisher
 
-.. _Zplug: https://github.com/zplug/zplug
+.. _fishtape: https://github.com/jorgebucaran/fishtape
 
-.. _Antigen: https://github.com/zsh-users/antigen
-
-.. _ZGen: https://github.com/tarjoilija/zgen
-
-.. _Fig: https://fig.io
-
-.. _oh-my-zsh: https://github.com/robbyrussell/oh-my-zsh
-
-.. |CircleCI| image:: https://circleci.com/gh/MichaelAquilina/zsh-autoswitch-virtualenv.svg?style=svg
-   :target: https://circleci.com/gh/MichaelAquilina/zsh-autoswitch-virtualenv
-
-.. |Release| image:: https://badge.fury.io/gh/MichaelAquilina%2Fzsh-autoswitch-virtualenv.svg
-   :target: https://badge.fury.io/gh/MichaelAquilina%2Fzsh-autoswitch-virtualenv
-
-.. |ASCIICAST| image:: https://asciinema.org/a/ciDroIzqcC14VEeXMkqdRbvXf.svg
-   :target: https://asciinema.org/a/ciDroIzqcC14VEeXMkqdRbvXf
+.. _clownfish: https://github.com/IlanCosman/clownfish
 
 .. |GPLv3| image:: https://img.shields.io/badge/License-GPL%20v3-blue.svg
    :target: https://www.gnu.org/licenses/gpl-3.0
