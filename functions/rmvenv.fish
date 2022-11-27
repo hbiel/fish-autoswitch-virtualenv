@@ -11,10 +11,10 @@ function rmvenv -d "remove the virtualenv for current directory"
     set -l venv_type (_autovenv_get_venv_type "$PWD")
 
     if test "$venv_type" = "pipenv"
-        deactivate
+        _autovenv_deactivate_virtualenv
         pipenv --rm
     else if test "$venv_type" = "poetry"
-        deactivate
+        _autovenv_deactivate_virtualenv
         poetry env remove (poetry run which python)
     else
         if test -f "$AUTOSWITCH_FILE"
