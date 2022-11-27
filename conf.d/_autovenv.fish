@@ -14,6 +14,7 @@ if status is-interactive
     end
 
     function _autovenv_activate --on-variable dirprev # PWD get's updated before dirprev so we're listening on dirprev instead to ensure that it is up-to-date
+        test -z "$dirprev" && return # dirprev get's set on first cd and then updated; this fires the trigger two times, so we return early
         test -z "$AUTOSWITCH_DISABLE" && _autovenv_check_venv
     end
     _autovenv_activate
