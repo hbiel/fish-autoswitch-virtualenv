@@ -30,4 +30,7 @@ mock _autovenv_check_path \* "printf ./pipenv/Pipfile"
 mock _autovenv_activate_pipenv \* "echo pipenv_active"
 @test "_autovenv_check_venv: pipenv activated" (_autovenv_check_venv) = "pipenv_active"
 
+set -x AUTOSWITCH_DISABLE true
+@test "_autovenv_check_venv: AUTOSWITCH_DISABLE = true" (_autovenv_check_venv) -z
+
 rm -rf $temp

@@ -1,4 +1,6 @@
 function _autovenv_check_venv -d "Checks the current directory for a potential virtualenv and when found tries to activate it"
+    set -q AUTOSWITCH_DISABLE && return
+
     set -l file_owner
     set -l file_permissions
 
